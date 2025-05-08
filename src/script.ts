@@ -1,28 +1,48 @@
-const filenameValid = /^([^0-9.#<>$+%!`&='{}@\\/:*?"<>|\n])([^#<>$+%!`&='{}@\\/:*?"<>|\n])*$/i;
+const filenameValid =
+    /^[^0-9.#<>$+%!`&='{}@\\/:*?"|\n][^#<>$+%!`&='{}@\\/:*?"|\n]*$/;
 const LOAD_SCRIPT_AS_ASSET = 0;
 
-class Script {
-    constructor() {
-    }
+interface ScriptArgs {
+    filename?: string;
+    className?: string;
+    scriptName?: string;
+}
 
-    static create(args) {
+interface ScriptFile {
+    name: string;
+    filename: string;
+    content: string;
+    contentType: string;
+    preload: boolean;
+}
+
+class Script {
+    static create(args: ScriptArgs): ScriptFile {
         const filename = args.filename || 'script.js';
-    
+
         const name = filename.slice(0, -3);
         let className = args.className || '';
         let scriptName = args.scriptName || '';
 
         if (!className || !scriptName) {
             // tokenize filename
-            const tokens = [];
-            const string = name.replace(/([^A-Z])([A-Z][^A-Z])/g, '$1 $2').replace(/([A-Z0-9]{2,})/g, ' $1');
-            const parts = string.split(/(\s|\-|_|\.)/g);
+            const tokens: string[] = [];
+            const string = name
+            .replace(/([^A-Z])([A-Z][^A-Z])/g, '$1 $2')
+            .replace(/([A-Z0-9]{2,})/g, ' $1');
+            const parts = string.split(/([\s\-_.])/g);
 
             // filter valid tokens
             for (let i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].toLowerCase().trim();
-                if (parts[i] && parts[i] !== '-' && parts[i] !== '_' && parts[i] !== '.')
+                if (
+                    parts[i] &&
+                    parts[i] !== '-' &&
+                    parts[i] !== '_' &&
+                    parts[i] !== '.'
+                ) {
                     tokens.push(parts[i]);
+                }
             }
 
             if (tokens.length) {
@@ -30,7 +50,8 @@ class Script {
                     scriptName = tokens[0];
 
                     for (let i = 1; i < tokens.length; i++) {
-                        scriptName += tokens[i].charAt(0).toUpperCase() + tokens[i].slice(1);
+                        scriptName +=
+                            tokens[i].charAt(0).toUpperCase() + tokens[i].slice(1);
                     }
                 }
 
@@ -40,16 +61,13 @@ class Script {
                     }
                 }
             } else {
-                if (!className)
-                    className = 'Script';
+                if (!className) className = 'Script';
 
-                if (!scriptName)
-                    scriptName = 'script';
+                if (!scriptName) scriptName = 'script';
             }
         }
 
-        if (!filenameValid.test(className))
-            className = 'Script';
+        if (!filenameValid.test(className)) className = 'Script';
 
         const content = `
 var ${className} = pc.createScript('${scriptName}');
@@ -70,7 +88,7 @@ ${className}.prototype.update = function(dt) {
 
 // to learn more about script anatomy, please read:
 // https://developer.playcanvas.com/en/user-manual/scripting/
-        `.trim();
+                `.trim();
 
         return {
             name: filename,
@@ -79,7 +97,7 @@ ${className}.prototype.update = function(dt) {
             contentType: 'text/javascript',
             preload: true
         };
-    };
+    }
 }
 
-module.exports = Script;
+export default Script;
