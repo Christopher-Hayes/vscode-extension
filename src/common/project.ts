@@ -1,5 +1,8 @@
-export interface LocalProject extends Project {
+import { LocalAsset } from './asset';
+import { RestBranch, RestProject } from '../providers/editor-api-provider';
+
+export interface LocalProject extends RestProject {
     files?: Map<number, LocalAsset>;
-    branches?: Branch[];
+    branches?: RestBranch[];
     branchId?: string;
 }

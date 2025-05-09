@@ -152,6 +152,7 @@
   },
   "dependencies": {
     "@playcanvas/editor-api": "^1.1.18",
+    "fetch-blob": "^4.0.0",
     "form-data": "^4.0.0",
     "node-fetch": "^2.1.2",
     "playcanvas": "^1.69.2"
