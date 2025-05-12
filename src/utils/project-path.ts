@@ -1,4 +1,4 @@
-import { Asset } from '../api';
+import { Asset } from '../api.deprecated';
 import { LocalAsset } from '../common/asset';
 import { LocalProject } from '../common/project';
 import CloudStorageProvider from '../providers/cloud-storage-provider';

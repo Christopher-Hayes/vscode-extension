@@ -29,9 +29,11 @@ export class LocalAsset implements RestAsset {
 
     // Note: Files only appears on folder assets
     // eslint-disable-next-line no-use-before-define
-    files: Map<string, LocalAsset>;
+    files: Map<number, LocalAsset>;
 
     // path: string;
+
+    content: string = '';
 
     constructor(asset: RestAsset) {
         this.id = asset.id;

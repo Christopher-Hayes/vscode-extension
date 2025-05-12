@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { Branch } from './api';
 import CloudStorageProvider from './providers/cloud-storage-provider';
+import { RestBranch } from './providers/editor-api-provider';
 import ProjectDataProvider from './providers/project-data-provider';
 
 let fileProvider: CloudStorageProvider;
@@ -134,7 +134,7 @@ async function switchBranch(project: any): Promise<void> {
         const branches = await fileProvider.fetchBranches(project);
 
         const prevBranch = project.branchId ?
-            branches.find((b: Branch) => b.id === project.branchId)?.name ?? 'main' :
+            branches.find((b: RestBranch) => b.id === project.branchId)?.name ?? 'main' :
             'main';
         const names = branches.map((branch: any) => branch.name);
 

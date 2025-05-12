@@ -3,9 +3,11 @@ import * as path from 'path';
 
 import * as vscode from 'vscode';
 
-import { Api, Asset, AssetModifiedError, Branch, Project } from '../api';
+// import { Api, Asset, AssetModifiedError, Branch, Project } from '../api.deprecated';
+import { EditorApiProvider } from './editor-api-provider';
 import FileDecorationProvider from './file-decoration-provider';
 import { LocalAsset } from '../common/asset';
+import { LocalProject } from '../common/project';
 import { ProjectPath } from '../utils/project-path';
 
 let fileDecorationProvider: any;
@@ -36,14 +38,14 @@ class CloudStorageProvider implements vscode.FileSystemProvider {
 
     projectDataProvider: any;
 
-    api: Api;
+    api: EditorApiProvider;
 
     constructor(context: vscode.ExtensionContext, projectDataProvider: any) {
         this.projects = [];
         this.userId = null;
 
         this.context = context;
-        this.api = new Api(context);
+        this.api = new EditorApiProvider(context);
         this._onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
 
         const filePath = path.join(
@@ -195,6 +197,7 @@ class CloudStorageProvider implements vscode.FileSystemProvider {
         return new TextEncoder().encode(asset.content);
     }
 
+    // Reconstructs file tree at the given path
     reconstructFileTree(pathStr: string): void {
         const parts = pathStr.split('/');
         const project = this.getProjectByName(parts[1]);
@@ -204,15 +207,26 @@ class CloudStorageProvider implements vscode.FileSystemProvider {
             return;
         }
 
-        let files = project.files;
-        for (let i = 2; i < parts.length - 1; ++i) {
-            const folder = files?.get(parts[i]);
-            if (!folder) {
-                // Note that it's possible for project.files to be undefined
-                throw new Error(`Failed to find folder ${parts[i]}`);
-            }
-            files = folder.files;
-        }
+        // let files = project.files;
+        // for (let i = 2; i < parts.length - 1; ++i) {
+        //     const folderPath = parts.slice(0, i + 1).join('/');
+        //     const folderId =
+        //     // const folder = files?.get(parts[i]);
+        //     // const folder = files?.get(folderPath);
+        //     const folder = this.lookup(
+        //         vscode.Uri.parse(`playcanvas:${folderPath}`)
+        //     );
+
+        //     if (!folder) {
+        //         // Note that it's possible for project.files to be undefined
+        //         throw new Error(`Failed to find folder ${parts[i]}`);
+        //     }
+        //     files = folder.files;
+        // }
+
+        const foldersOnPath = this.lookup(vscode.Uri.parse(`playcanvas:${pathStr}`));
+
+        // TODO
     }
 
     addFile(pathStr: string, asset: LocalAsset): void {
